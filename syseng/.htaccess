@@ -1,0 +1,2 @@
+php_value mbstring.http_input pass
+php_value mbstring.http_output pass
