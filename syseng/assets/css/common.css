@@ -1,6 +1,6 @@
 @font-face {
     font-family: QualcommIcon;
-    src: url(fonts/qc-icons.woff) format('woff'),url(fonts/qc-icons.otf) format('otf');
+    src: url(../fonts/qc-icons.woff) format('woff'),url(../fonts/qc-icons.otf) format('otf');
 }
 
 .logo-qualcomm{
