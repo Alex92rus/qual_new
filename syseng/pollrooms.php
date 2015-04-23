@@ -3,7 +3,7 @@
 //header("Content-Type: application/json; charset=UTF-8");
 
 	//Connect to database
-    include("../include/dbconnect.php");
+    include("include/dbconnect.php");
     
     $SQL = "SELECT a.RoomID, a.NumberOfPeople, c.Crowded, a.Confidence
             FROM  currentstate a, occupancylevels c
