@@ -2,15 +2,16 @@
 
 include_once('dbconnectPDO.php');
 
-$sql_state = "SELECT c.RoomId, c.NumberOfPeople, b.Confidence, b.passed FROM currentstate as c, 
-  ( SELECT agreg.RoomId, IF(SUM(ABS(agreg.transition))<>0, 
-    CAST(SUM(ABS(agreg.transition)*agreg.Confidence)/SUM(ABS(agreg.transition)) as DECIMAL(5,2)), agreg.Confidence) as Confidence, 
-    SUM(ABS(agreg.transition)) as passed FROM ( SELECT r3.`RoomId`, r3.`event_time`, r3.`transition`, r3.`Confidence` 
-         FROM `roommovements` r3 WHERE r3.event_time >= 
-            (SELECT MAX(r2.`EventTime`) FROM `roomoccupancy` r2 WHERE r2.`RoomID` = r3.`RoomID` ) 
-              UNION ALL SELECT `RoomID`,`EventTime`, `NumberofPeople`, `Confidence` FROM `roomoccupancy` r1 
-              WHERE r1.`EventTime` = (SELECT MAX(r2.`EventTime`) FROM `roomoccupancy` r2 
-                WHERE r1.`RoomID` = r2.`RoomID` ) ) as agreg GROUP BY RoomId ) as b WHERE c.roomId = b.roomId ORDER BY 1";
+$sql_state = "SELECT RoomId, SUM(NumberOfPeople) as NumberOfPeople, 
+                     IF(SUM(ABS(agreg.NumberOfPeople))<>0,CAST(SUM(ABS(agreg.NumberOfPeople)*agreg.Confidence)/SUM(ABS(agreg.NumberOfPeople)) as DECIMAL(5,2)), agreg.Confidence) as Confidence, 
+                     SUM(ABS(agreg.NumberOfPeople)) as passed 
+                FROM
+                ( SELECT r3.`RoomId`, r3.`transition` as NumberOfPeople, r3.`Confidence` 
+                       FROM `roommovements` r3 WHERE r3.event_time > 
+                          (SELECT MAX(r2.`EventTime`) FROM `lastroomoccupancy` r2  ) 
+                UNION ALL 
+                  SELECT `RoomID`, `NumberofPeople`, `Confidence` FROM `lastroomoccupancy` r1 
+                               ) as agreg GROUP BY 1 ORDER BY CAST(SUBSTR(RoomId, 2) AS UNSIGNED);";
 
 
 $rn = 0;

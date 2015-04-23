@@ -11,7 +11,7 @@
 <nav class="top-bar" data-topbar role="navigation" data-options="sticky_on: [large,medium,small]">
   <ul class="title-area">
     <li class="name">
-      <h1><a href="<?php if ($isLoggedIn) { echo "bp.php"; } else {echo "index.php";} ?>"><img src="../assets/images/logo.png" style="height: 90%;"></a>
+      <h1><a href="<?php if ($isLoggedIn) { echo "bp.php"; } else {echo "index.php";} ?>"><img src="../assets/images/logo.png" style="  height: 80%; margin-top: 3px;"></a>
       </h1>
     </li>
   </ul>
@@ -22,7 +22,7 @@
       <li><a href="about.php" >About</a></li>
       <li><a href="contact.php">Contact</a></li>
       <li><a href="help.php">Help</a></li>
-      <li><a href="../forum/index.php">Forum</a></li>
+      <li><a href="http://qualoccupy.freeforums.net">Forum</a></li>
       <?php if ($isLoggedIn) { echo '<li><a href="logout.php"> Logout </a></li>'; } ?>
     </ul>
   </section>

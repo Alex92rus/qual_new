@@ -6,5 +6,7 @@
     <link rel="stylesheet" type="text/css" href="../assets/css/index.css">
     <link rel="stylesheet" type="text/css" href="../assets/css/contact.css">
     <link rel="stylesheet" type="text/css" href="../assets/css/report.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/reportlist.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/errorlist.css">
     <link rel="stylesheet" type="text/css" href="../lib/jquery-ui/jquery-ui.css">
 </head>
