@@ -6,10 +6,10 @@
         <label>Current</label>
       </a>
     </li>
-     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_pastmoment.php')) { echo 'active'; } ?>">
+     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_pastoccupancy.php')) { echo 'active'; } ?>">
       <a href="report_pastmoment.php">
         <img src="../assets/images/img-trans.png" >
-        <label>Past Moment</label>
+        <label>Past Occupancy</label>
       </a>
     </li>
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_convex.php')) { echo 'active'; } ?>">
@@ -25,24 +25,24 @@
         <label>Convex Weekly</label>
       </a>
     </li>
-    <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_history_room.php')) { echo 'active'; } ?>">
+    <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_transitions_room.php')) { echo 'active'; } ?>">
       <a href="report_history_room.php">
         <img src="../assets/images/img-trans.png" >
-        <label>History</label>
+        <label>Transitions for Room</label>
       </a>
     </li>
 
-    <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_room_business.php')) { echo 'active'; } ?>">
+    <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_room_movements.php')) { echo 'active'; } ?>">
       <a href="report_room_business.php">
         <img src="../assets/images/img-trans.png" >
-        <label>Room Business</label>
+        <label>Movements in Room</label>
       </a>
     </li>
 
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_door_inspect.php')) { echo 'active'; } ?>">
       <a href="report_door_inspect.php">
         <img src="../assets/images/img-trans.png" >
-        <label>Inspect A Door</label>
+        <label>Movements through Door</label>
       </a>
     </li>
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_door_usage.php')) { echo 'active'; } ?>">

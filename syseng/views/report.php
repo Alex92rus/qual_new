@@ -79,7 +79,7 @@ include('../include/get_currentstate.php');
         </div>
       </div>
     </div>
-    
+    <?php include("../layout/reportlist.php"); ?>
     <?php include("../layout/footer.php");?>
     <script type="text/javascript" src="../assets/js/progressbar.js"></script>
     <script type="text/javascript" src="../lib/amcharts/amcharts.js"></script>

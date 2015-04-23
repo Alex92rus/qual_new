@@ -4,16 +4,17 @@
 include('../include/get_doors.php');
 include('../include/get_occ.php');
 
-if(!isset($history)) {   $history[1]["doorId"] = "NotSet"; $history[1]["transition"] = Null; }
+if(!isset($history)) {   $history[1]["event_time"] = "NotSet"; $history[1]["transition"] = Null; }
 
   //phpinfo(INFO_VARIABLES);
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') && (!empty($_POST['submit']))):
   if (isset($_POST['startdate'])) { $startdate = $_POST['startdate']; }
   if (isset($_POST['enddate'])) { $enddate = $_POST['enddate']; }
+  if (isset($_POST['referdoor'])) { $referdoor = $_POST['referdoor']; }
  
 
-  include('../include/get_history_door_usage.php');
+  include('../include/get_history_door.php');
 
 endif; //form submitted
 ?>
@@ -40,7 +41,7 @@ endif; //form submitted
                   </div>
                   <div class="large-5 columns">
                     <fieldset style="  background-color: transparent;">
-                      <legend>Current occupants</legend>
+                      <legend>Door use for period</legend>
                       <div class="row">
                         <div id="current-status" class="large-3 large-centered columns">
                           <div id="current-number"><?php echo $totOcc ?></div>
@@ -57,7 +58,7 @@ endif; //form submitted
           <div class="row">
             <div class="large-12 medium-12 small-12 columns">
               <fieldset>
-                <legend>Doors ordered by people moving through for the selected period of time</legend>
+                <legend>Number of people moving through selected door/doors for the selected period of time</legend>
                 <form name="roomhistory" id="roomhistory" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
                   <div class="row">
                     <div class="large-4 columns">
@@ -81,6 +82,15 @@ endif; //form submitted
                       </div>
                     </div>
                     <div class="large-2 columns">
+                      <select name="referdoor" id="referdoor" required >
+                        <?php
+                          $nr = 1;
+                          while($nr <= $rNum) {
+                            echo "<option value='".$doorList[$nr]['doorId']."'>".$doorList[$nr]['doorId']."</option>\n";
+                            $nr++ ;
+                          }
+                        ?>
+                      </select>
                     </div>
                     <div class="large-2 columns">
                       <input type="submit" name="submit" value="Refresh Table" class="button tiny">
@@ -92,20 +102,20 @@ endif; //form submitted
                         <table class="table table-striped table-bordered table-condensed table-hover" style="width:100%;">
 <!--                         <table style="width:100%;" class="table table-striped table-bordered table-condensed"> -->
                            <tr>
-                            <th width="300" span=2><?php echo is_null($history[1]["transition"])?"Not calculated...":" total passed for the period:  ".$total; ?></th>
+                            <th width="300" style="font-size: 1.5em" span=2>DoorID:<?php echo isset($referdoor)?$referdoor." passed for the period: ".$total:"Choose door"; ?></th>
                           </tr>
                           <tr>
-                            <th width="200">DoorId</th>
+                            <th width="200">Date</th>
                             <th width="100">Passed</th>
                           </tr>
                           <?php
                           if(isset($history)) {
                             for($nr=1;$nr<=count($history);$nr++) {
-                              $doorId=$history[$nr]['doorId'];
+                              $date=$history[$nr]['event_time'];
                               $moved=$history[$nr]['transition'];
 
                               echo '<tr>'.
-                                '<td>'.$doorId.'</td>'.
+                                '<td>'.$date.'</td>'.
                                 '<td>'.$moved.'</td>'.
                                 '</tr> ';
                             }
@@ -124,7 +134,7 @@ endif; //form submitted
         </div>
       </div>
     </div>
-    
+    <?php include("../layout/reportlist.php"); ?>
     <?php include("../layout/footer.php");?>
     <script type="text/javascript" src="../assets/js/progressbar.js"></script>
     <script type="text/javascript" src="../lib/amcharts/amcharts.js"></script>
