@@ -11,7 +11,7 @@
 
     if (isset($_GET["floor"])) {
         $floor = $pdbh->real_escape_string($_GET["floor"]);
-        $SQL = "SELECT a.RoomID, a.NumberOfPeople, c.Crowded
+        $SQL = "SELECT a.RoomID, a.NumberOfPeople, c.Crowded, a.Confidence
                  FROM  currentstate a, roomparameters b, occupancylevels c
                  WHERE a.RoomID = b.RoomID
                  AND a.RoomID = c.RoomID
@@ -19,7 +19,7 @@
     } 
     if (isset($_GET["room"])) {
         $room = $pdbh->real_escape_string($_GET["room"]);
-        $SQL = " SELECT a.RoomID, a.NumberOfPeople, c.Crowded
+        $SQL = " SELECT a.RoomID, a.NumberOfPeople, c.Crowded, a.Confidence
                  FROM  currentstate a, occupancylevels c
                  WHERE a.RoomID = c.RoomID
                  AND a.RoomID = '$room'";
