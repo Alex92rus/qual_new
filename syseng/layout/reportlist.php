@@ -3,11 +3,11 @@
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report.php')) { echo 'active'; } ?>">
       <a href="report.php">
         <img src="../assets/images/img-trans.png" >
-        <label>Current</label>
+        <label>Current Occupancy</label>
       </a>
     </li>
      <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_pastoccupancy.php')) { echo 'active'; } ?>">
-      <a href="report_pastmoment.php">
+      <a href="report_pastoccupancy.php">
         <img src="../assets/images/img-trans.png" >
         <label>Past Occupancy</label>
       </a>
@@ -26,14 +26,14 @@
       </a>
     </li>
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_transitions_room.php')) { echo 'active'; } ?>">
-      <a href="report_history_room.php">
+      <a href="report_transitions_room.php">
         <img src="../assets/images/img-trans.png" >
         <label>Transitions for Room</label>
       </a>
     </li>
 
     <li class="<?php if (strpos($_SERVER['REQUEST_URI'],'report_room_movements.php')) { echo 'active'; } ?>">
-      <a href="report_room_business.php">
+      <a href="report_room_movements.php">
         <img src="../assets/images/img-trans.png" >
         <label>Movements in Room</label>
       </a>

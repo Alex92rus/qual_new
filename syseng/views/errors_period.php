@@ -1,21 +1,39 @@
 <?php
 //history of room between 2 date
 //include_once('../include/dbconnectPDO.php');
-include('../include/get_rooms.php');
+include('../include/get_doors.php');
+include('../include/get_occ.php');
 
-if(!isset($history)) {   $history[1]["event_time"] = "NotSet"; $history[1]["transition"] = Null; $history[1]["Confidence"] = Null;}
+//if(!isset($history)) {   $history[1]["event_time"] = "NotSet"; $history[1]["transition"] = Null; }
 
   //phpinfo(INFO_VARIABLES);
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') && (!empty($_POST['submit']))):
   if (isset($_POST['startdate'])) { $startdate = $_POST['startdate']; }
   if (isset($_POST['enddate'])) { $enddate = $_POST['enddate']; }
-  if (isset($_POST['referroom'])) { $referroom = $_POST['referroom']; }
+  if (isset($_POST['referdoor'])) { $referdoor = $_POST['referdoor']; }
  
-
-  include('../include/get_history_room.php');
+  unset( $history ); // Graph array for convex
 
 endif; //form submitted
+
+if(!isset($startdate)) {
+  $ds = new datetime();
+  $startdate = $ds->format('Y-m-d H:i:s');
+  unset( $history ); // Graph array for convex
+}
+if(!isset($enddate)) {
+  $ds = new datetime();
+  $enddate = $ds->format('Y-m-d H:i:s'); 
+  unset( $history ); // Graph array for convex
+}
+if(!isset($referdoor)) {
+  $referdoor = "NotSet";
+  unset( $history ); // Graph array for convex
+}
+
+include('../include/get_history_errors_door.php');
+
 ?>
 
 
@@ -40,7 +58,7 @@ endif; //form submitted
                   </div>
                   <div class="large-5 columns">
                     <fieldset style="  background-color: transparent;">
-                      <legend>Current Occupancy Status</legend>
+                      <legend>Door use for period</legend>
                       <div class="row">
                         <div id="current-status" class="large-3 large-centered columns">
                           <div id="current-number"><?php echo $totOcc ?></div>
@@ -57,7 +75,7 @@ endif; //form submitted
           <div class="row">
             <div class="large-12 medium-12 small-12 columns">
               <fieldset>
-                <legend>Transitions for a Selected Room</legend>
+                <legend>Error corrections for the selected door for the selected period of time</legend>
                 <form name="roomhistory" id="roomhistory" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
                   <div class="row">
                     <div class="large-4 columns">
@@ -66,7 +84,7 @@ endif; //form submitted
                           <span class="prefix">Start:</span>
                         </div>
                         <div class="small-9 columns">
-                          <input type="text" name="startdate" id="startdate" required placeholder="DD/MM/YYYY" value="<?php if (isset($startdate)) { echo $startdate; } ?>">
+                          <input type="text" name="startdate" id="startdate"  placeholder="DD/MM/YYYY" value="<?php if (isset($startdate)) { echo $startdate; } ?>">
                         </div>
                       </div>
                     </div>
@@ -76,16 +94,16 @@ endif; //form submitted
                           <span class="prefix">End:</span>
                         </div>
                         <div class="small-9 columns">
-                          <input type="text" name="enddate" id="enddate" required  placeholder="DD/MM/YYYY"  value="<?php if (isset($enddate)) { echo $enddate; } ?>">
+                          <input type="text" name="enddate" id="enddate"   placeholder="DD/MM/YYYY"  value="<?php if (isset($enddate)) { echo $enddate; } ?>">
                         </div>
                       </div>
                     </div>
                     <div class="large-2 columns">
-                      <select name="referroom" id="referroom" required >
+                      <select name="referdoor" id="referdoor" required >
                         <?php
                           $nr = 1;
                           while($nr <= $rNum) {
-                            echo "<option value='".$roomList[$nr]['RoomId']."'>".$roomList[$nr]['RoomId']."</option>\n";
+                            echo "<option value='".$doorList[$nr]['doorId']."'>".$doorList[$nr]['doorId']."</option>\n";
                             $nr++ ;
                           }
                         ?>
@@ -95,40 +113,44 @@ endif; //form submitted
                       <input type="submit" name="submit" value="Refresh Table" class="button tiny">
                     </div>
                   </div>
+                </form>
+                <div class="row">
+                  <div class="large-10 large-centered columns">
+                    <div id="cChart" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+                  </div>
+                </div>
+
+                <div class="row">
                   <div class="row">
-<!--                     <div class="large-12 columns">
-                      <div id="hChart" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
-                    </div> -->
-                    <div class="row">
-                      <div class="large-10 large-centered columns">
-                        <table class="table table-striped table-bordered table-condensed hover" style="width:100%;">
+                    <div class="large-10 large-centered columns">
+                      <table class="table table-striped table-bordered table-condensed table-hover" style="width:100%;">
 <!--                         <table style="width:100%;" class="table table-striped table-bordered table-condensed"> -->
-                           <tr>
-                            <th width="300" span=2>RoomID:<?php echo isset($referroom)?$referroom:"Choose room"; ?></th>
-                          </tr>
-                          <tr>
-                            <th width="200">Date</th>
-                            <th width="100">Occupancy</th>
-                          </tr>
-                          <?php
-                          if(isset($history)) {
-                            for($nr=1;$nr<=count($history);$nr++) {
-                              $date=$history[$nr]['event_time'];
-                              $moved=$history[$nr]['transition'];
+                         <tr>
+                          <th width="300" style="font-size: 1.5em" span=2>DoorID:<?php echo isset($referdoor)?$referdoor." passed for the period: ".$total:"Choose door"; ?></th>
+                        </tr>
+                        <tr>
+                          <th width="200">Date</th>
+                          <th width="100">Corrected</th>
+                        </tr>
+                        <?php
+                        if(isset($history)) {
+                          for($nr=1;$nr<=count($history);$nr++) {
+                            $date=$history[$nr]['event_time'];
+                            $moved=$history[$nr]['transition'];
 
-                              echo '<tr>'.
-                                '<td>'.$date.'</td>'.
-                                '<td>'.$moved.'</td>'.
-                                '</tr> ';
-                            }
+                            echo '<tr>'.
+                              '<td>'.$date.'</td>'.
+                              '<td>'.$moved.'</td>'.
+                              '</tr> ';
                           }
+                        }
 
-                          ?>
-                        </table>
-                      </div>
+                        ?>
+                      </table>
                     </div>
                   </div>
-                </form>
+                </div>
+
               </fieldset>
               
             </div>
@@ -136,78 +158,57 @@ endif; //form submitted
         </div>
       </div>
     </div>
-    <?php include("../layout/reportlist.php"); ?>
+    
+    <?php include("../layout/errorlist.php"); ?>
     <?php include("../layout/footer.php");?>
     <script type="text/javascript" src="../assets/js/progressbar.js"></script>
     <script type="text/javascript" src="../lib/amcharts/amcharts.js"></script>
     <script type="text/javascript" src="../lib/amcharts/serial.js"></script>
     <script type="text/javascript" src="../assets/js/report.js"></script>
+ <script>
+    var chart;
 
-  <!-- cutom functions -->
-    <script>
-     AmCharts.loadJSON = function(url) {
-        // create the request
-        if (window.XMLHttpRequest) {
-          // IE7+, Firefox, Chrome, Opera, Safari
-          var request = new XMLHttpRequest();
-        } else {
-          // code for IE6, IE5
-          var request = new ActiveXObject('Microsoft.XMLHTTP');
-        }
-
-        // load it
-        // the last "false" parameter ensures that our code will wait before the
-        // data is loaded
-        request.open('GET', url, false);
-        request.send();
-
-        // parse adn return the output
-        return eval(request.responseText);
-      };
-    </script>
-
-    <script>
-      var chart;
-
-      // create chart
-      AmCharts.ready(function() {
+    // create chart
+    AmCharts.ready(function() {
 
         // load the data
-        var chartData = AmCharts.loadJSON('../include/graph_data_history.php');
+        //var chartData = new AmCharts.loadJSON('../include/graph_data_cs_past.php');
+        var chartData = <?php include('../include/graph_history_errors_door.php');?>;
 
         // SERIAL CHART
-        chart = new AmCharts.AmSerialChart();
-        chart.pathToImages = "http://www.amcharts.com/lib/images/";
-        chart.dataProvider = chartData;
-        chart.categoryField = "nr";
-        chart.angle = 30;
-        chart.depth3D = 15;
-        //chart.dataDateFormat = "YYYY-MM-DD";
+      // SERIAL CHART
+      chart = new AmCharts.AmSerialChart();
+      chart.pathToImages = "http://www.amcharts.com/lib/images/";
+      chart.dataProvider = chartData;
+      chart.categoryField = "event_time";
+      chart.angle = 30;
+      chart.depth3D = 15;
+      //chart.dataDateFormat = "YYYY-MM-DD";
 
-        // GRAPHS
+      // GRAPHS
 
-        var graph1 = new AmCharts.AmGraph();
-        graph1.valueField = "transition";
-        //graph1.bullet = "round";
-       // graph1.bulletBorderColor = "#FFFFFF";
-       // graph1.bulletBorderThickness = 2;
-        graph1.lineThickness = 2;
-        graph1.lineAlpha = 0.5;
-        //graph1.type = "line";
-        graph1.type = "column";
-        graph1.fillAlphas = 0.8;
+      var graph1 = new AmCharts.AmGraph();
+      graph1.valueField = "corrections";
+      //graph1.bullet = "round";
+     // graph1.bulletBorderColor = "#FFFFFF";
+     // graph1.bulletBorderThickness = 2;
+      graph1.lineThickness = 2;
+      graph1.lineAlpha = 0.5;
+      //graph1.type = "line";
+      graph1.type = "column";
+      graph1.fillAlphas = 0.8;
 
 
-        chart.addGraph(graph1);
+      chart.addGraph(graph1);
 
-        // CATEGORY AXIS
-        //chart.categoryAxis.parseDates = true;
+      // CATEGORY AXIS
+      //chart.categoryAxis.parseDates = true;
 
-        // WRITE
-        chart.write("hChart");
-      });
-
+      // WRITE
+      chart.write("cChart");
+    });
     </script>
 
+ 
   </body>
 </html>
